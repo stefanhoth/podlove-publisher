@@ -53,6 +53,7 @@ function* handleStartTranscription(api: PodloveApiClient) {
 
   if (error) {
     yield put(assemblyaiStore.setError(error.error || 'Failed to start transcription'))
+    yield put(assemblyaiStore.setStatus('error'))
     return
   }
 
@@ -75,6 +76,7 @@ function* pollTranscriptionStatus(api: PodloveApiClient) {
 
     if (error) {
       yield put(assemblyaiStore.setError('Failed to check transcription status'))
+      yield put(assemblyaiStore.setStatus('error'))
       return
     }
 
@@ -89,6 +91,7 @@ function* pollTranscriptionStatus(api: PodloveApiClient) {
 
     if (status === 'error') {
       yield put(assemblyaiStore.setError(result.error || 'Transcription failed'))
+      yield put(assemblyaiStore.setStatus('error'))
       return
     }
   }

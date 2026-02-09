@@ -51,7 +51,6 @@ export const reducer = handleActions(
     [SET_ERROR]: (state: State, action: { payload: string | null }): State => ({
       ...state,
       error: action.payload,
-      status: action.payload ? 'error' : state.status,
     }),
     [SET_TRANSCRIPT_ID]: (state: State, action: { payload: string | null }): State => ({
       ...state,
