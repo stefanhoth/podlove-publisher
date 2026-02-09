@@ -34,7 +34,7 @@ class REST_API
             [
                 'methods' => \WP_REST_Server::CREATABLE,
                 'callback' => [$this, 'start_transcription'],
-                'permission_callback' => [$this, 'permission_check'],
+                'permission_callback' => [$this, 'permission_check_post'],
                 'args' => [
                     'post_id' => [
                         'required' => true,
@@ -48,7 +48,7 @@ class REST_API
             [
                 'methods' => \WP_REST_Server::READABLE,
                 'callback' => [$this, 'get_status'],
-                'permission_callback' => [$this, 'permission_check'],
+                'permission_callback' => [$this, 'permission_check_post'],
                 'args' => [
                     'post_id' => [
                         'required' => true,
@@ -62,7 +62,7 @@ class REST_API
             [
                 'methods' => \WP_REST_Server::CREATABLE,
                 'callback' => [$this, 'import_transcript'],
-                'permission_callback' => [$this, 'permission_check'],
+                'permission_callback' => [$this, 'permission_check_post'],
                 'args' => [
                     'post_id' => [
                         'required' => true,
@@ -79,6 +79,21 @@ class REST_API
             return new \WP_Error(
                 'rest_forbidden',
                 'Sorry, you are not allowed to do that.',
+                ['status' => 403]
+            );
+        }
+
+        return true;
+    }
+
+    public function permission_check_post(\WP_REST_Request $request)
+    {
+        $post_id = (int) $request->get_param('post_id');
+
+        if (!current_user_can('edit_post', $post_id)) {
+            return new \WP_Error(
+                'rest_forbidden',
+                'Sorry, you are not allowed to edit this post.',
                 ['status' => 403]
             );
         }
