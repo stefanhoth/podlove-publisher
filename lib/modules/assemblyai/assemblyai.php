@@ -31,9 +31,13 @@ class AssemblyAI extends \Podlove\Modules\Base
         $api_key = $this->get_module_option('assemblyai_api_key', '');
 
         if ($api_key) {
+            $reset_url = wp_nonce_url(
+                admin_url('admin.php?page=podlove_settings_modules_handle&reset_assemblyai_api_key=1'),
+                'reset_assemblyai_api_key'
+            );
             $description = '<i class="podlove-icon-ok"></i> '
                 .__('API key is set.', 'podlove-podcasting-plugin-for-wordpress')
-                .' <a href="'.admin_url('admin.php?page=podlove_settings_modules_handle&reset_assemblyai_api_key=1').'">'
+                .' <a href="'.esc_url($reset_url).'">'
                 .__('Remove', 'podlove-podcasting-plugin-for-wordpress')
                 .'</a>';
         } else {
@@ -48,8 +52,12 @@ class AssemblyAI extends \Podlove\Modules\Base
         ]);
 
         if (isset($_GET['reset_assemblyai_api_key']) && $_GET['reset_assemblyai_api_key'] == '1') {
+            if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'reset_assemblyai_api_key')) {
+                return;
+            }
             $this->update_module_option('assemblyai_api_key', '');
-            header('Location: '.get_site_url().'/wp-admin/admin.php?page=podlove_settings_modules_handle');
+            wp_safe_redirect(admin_url('admin.php?page=podlove_settings_modules_handle'));
+            exit;
         }
     }
 }
