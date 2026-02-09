@@ -23,7 +23,7 @@ class EpisodeEnhancer
             'options' => [
                 'callback' => [$this, 'assemblyai_episode_form'],
             ],
-            'position' => 475,
+            'position' => 475, // just above Transcripts (480)
         ];
 
         return $form_data;
