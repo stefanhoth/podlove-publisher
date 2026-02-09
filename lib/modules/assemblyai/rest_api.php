@@ -170,6 +170,11 @@ class REST_API
         }
 
         $body = json_decode($response['body'], true);
+
+        if (!is_array($body) || !isset($body['id'], $body['status'])) {
+            return new \WP_REST_Response(['error' => 'Unexpected response from AssemblyAI'], 500);
+        }
+
         $transcript_id = sanitize_text_field($body['id']);
 
         update_post_meta($post_id, 'assemblyai_transcript_id', $transcript_id);
@@ -209,6 +214,11 @@ class REST_API
         }
 
         $body = json_decode($response['body'], true);
+
+        if (!is_array($body) || !isset($body['status'])) {
+            return new \WP_REST_Response(['error' => 'Unexpected response from AssemblyAI'], 500);
+        }
+
         $status = $body['status'];
 
         update_post_meta($post_id, 'assemblyai_status', $status);
@@ -256,6 +266,10 @@ class REST_API
         }
 
         $body = json_decode($response['body'], true);
+
+        if (!is_array($body) || !isset($body['status'])) {
+            return new \WP_REST_Response(['error' => 'Unexpected response from AssemblyAI'], 500);
+        }
 
         if ($body['status'] !== 'completed') {
             return new \WP_REST_Response(['error' => 'Transcript is not yet completed'], 400);
