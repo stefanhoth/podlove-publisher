@@ -39,6 +39,7 @@ class REST_API
                     'post_id' => [
                         'required' => true,
                         'type' => 'integer',
+                        'sanitize_callback' => 'absint',
                     ],
                 ],
             ],
@@ -53,6 +54,7 @@ class REST_API
                     'post_id' => [
                         'required' => true,
                         'type' => 'integer',
+                        'sanitize_callback' => 'absint',
                     ],
                 ],
             ],
@@ -67,6 +69,7 @@ class REST_API
                     'post_id' => [
                         'required' => true,
                         'type' => 'integer',
+                        'sanitize_callback' => 'absint',
                     ],
                 ],
             ],
