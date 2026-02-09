@@ -26,17 +26,17 @@
 
       <!-- Imported -->
       <div v-else-if="status === 'imported'">
-        <p style="color: #00a32a;">
+        <p class="text-green-600">
           {{ __('Transcript imported successfully.', 'podlove-podcasting-plugin-for-wordpress') }}
         </p>
-        <button class="button" @click="onReset" style="margin-top: 5px;">
+        <button class="button mt-1" @click="onReset">
           {{ __('Transcribe Again', 'podlove-podcasting-plugin-for-wordpress') }}
         </button>
       </div>
 
       <!-- Error -->
       <div v-else-if="status === 'error'">
-        <p style="color: #d63638;" class="mb-2">
+        <p class="text-red-600 mb-2">
           {{ error || __('An error occurred.', 'podlove-podcasting-plugin-for-wordpress') }}
         </p>
         <button class="button" @click="onReset">
