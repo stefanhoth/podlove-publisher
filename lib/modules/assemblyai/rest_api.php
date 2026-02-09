@@ -167,7 +167,7 @@ class REST_API
         }
 
         $body = json_decode($response['body'], true);
-        $transcript_id = $body['id'];
+        $transcript_id = sanitize_text_field($body['id']);
 
         update_post_meta($post_id, 'assemblyai_transcript_id', $transcript_id);
         update_post_meta($post_id, 'assemblyai_status', $body['status']);
@@ -187,8 +187,8 @@ class REST_API
             return new \WP_REST_Response(['error' => 'API key not configured'], 400);
         }
 
-        $transcript_id = get_post_meta($post_id, 'assemblyai_transcript_id', true);
-        if (empty($transcript_id)) {
+        $transcript_id = $this->get_valid_transcript_id($post_id);
+        if (!$transcript_id) {
             return new \WP_REST_Response(['error' => 'No transcription found for this episode'], 404);
         }
 
@@ -228,8 +228,8 @@ class REST_API
             return new \WP_REST_Response(['error' => 'API key not configured'], 400);
         }
 
-        $transcript_id = get_post_meta($post_id, 'assemblyai_transcript_id', true);
-        if (empty($transcript_id)) {
+        $transcript_id = $this->get_valid_transcript_id($post_id);
+        if (!$transcript_id) {
             return new \WP_REST_Response(['error' => 'No transcription found for this episode'], 404);
         }
 
@@ -268,6 +268,29 @@ class REST_API
         update_post_meta($post_id, 'assemblyai_status', 'imported');
 
         return new \WP_REST_Response(['success' => true]);
+    }
+
+    /**
+     * Get and validate transcript ID from post meta.
+     *
+     * @param int $post_id
+     *
+     * @return string|null valid transcript ID or null
+     */
+    private function get_valid_transcript_id($post_id)
+    {
+        $transcript_id = get_post_meta($post_id, 'assemblyai_transcript_id', true);
+
+        if (empty($transcript_id)) {
+            return null;
+        }
+
+        // AssemblyAI IDs are alphanumeric with hyphens
+        if (!preg_match('/^[a-zA-Z0-9\-]+$/', $transcript_id)) {
+            return null;
+        }
+
+        return $transcript_id;
     }
 
     /**
