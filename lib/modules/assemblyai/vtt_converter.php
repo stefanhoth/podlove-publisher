@@ -63,14 +63,24 @@ class VttConverter
         }
 
         // Build speaker map: word index -> speaker label
+        // Both arrays are sorted by time, so we use a pointer walk (O(n+m))
         $speakerMap = [];
         if (!empty($utterances)) {
-            foreach ($utterances as $utterance) {
-                for ($i = 0; $i < count($words); ++$i) {
-                    $word = $words[$i];
-                    if ($word['start'] >= $utterance['start'] && $word['end'] <= $utterance['end']) {
-                        $speakerMap[$i] = $utterance['speaker'];
-                    }
+            $utteranceIndex = 0;
+            $utteranceCount = count($utterances);
+
+            for ($i = 0; $i < count($words); ++$i) {
+                $word = $words[$i];
+
+                // Advance utterance pointer past utterances that end before this word
+                while ($utteranceIndex < $utteranceCount && $utterances[$utteranceIndex]['end'] < $word['start']) {
+                    ++$utteranceIndex;
+                }
+
+                if ($utteranceIndex < $utteranceCount
+                    && $word['start'] >= $utterances[$utteranceIndex]['start']
+                    && $word['end'] <= $utterances[$utteranceIndex]['end']) {
+                    $speakerMap[$i] = $utterances[$utteranceIndex]['speaker'];
                 }
             }
         }

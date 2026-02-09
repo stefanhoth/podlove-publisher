@@ -63,10 +63,12 @@ function* handleStartTranscription(api: PodloveApiClient) {
   yield fork(pollTranscriptionStatus, api)
 }
 
+const MAX_POLL_ATTEMPTS = 360 // 30 minutes at 5s intervals
+
 function* pollTranscriptionStatus(api: PodloveApiClient) {
   const postId: string = yield select(selectors.post.id)
 
-  while (true) {
+  for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt++) {
     yield call(sleep, 5)
 
     const { result, error } = yield api.get(`assemblyai/status/${postId}`)
@@ -90,6 +92,9 @@ function* pollTranscriptionStatus(api: PodloveApiClient) {
       return
     }
   }
+
+  yield put(assemblyaiStore.setError('Transcription timed out. Please try again.'))
+  yield put(assemblyaiStore.setStatus('error'))
 }
 
 function* handleImportTranscript(api: PodloveApiClient) {
